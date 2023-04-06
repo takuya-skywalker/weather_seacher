@@ -3,15 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:weather_seacher/repository/repository.dart';
 import 'package:weather_seacher/view_model/provider.dart';
 
-class HomePage extends ConsumerWidget{
+class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
-  
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cityName = ref.watch(cityNameProvider.notifier);
-    final asyncValue = ref.watch(dataProvider);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Center(child: Text('天気調べる')),
@@ -21,76 +19,55 @@ class HomePage extends ConsumerWidget{
           Center(
             child: Container(
               color: Colors.red,
-              child: const Text(
-                '今のお天気は〜？'
-              ),
+              child: const Text('今のお天気は〜？'),
             ),
           ),
           DropdownButton(
-            items: [
-              const DropdownMenuItem(
-                child: Text(
-                  '東京'
-                ),
+            items: const [
+              DropdownMenuItem(
                 value: 'Tokyo',
+                child: Text('東京'),
               ),
-              const DropdownMenuItem(
-                child: Text(
-                  '札幌'
-                ),
+              DropdownMenuItem(
                 value: 'Sapporo',
+                child: Text('札幌'),
               ),
-              const DropdownMenuItem(
-                child: Text(
-                  '仙台'
-                ),
+              DropdownMenuItem(
                 value: 'Sendai',
+                child: Text('仙台'),
               ),
-              const DropdownMenuItem(
-                child: Text(
-                  '名古屋'
-                ),
+              DropdownMenuItem(
                 value: 'Nagoya',
+                child: Text('名古屋'),
               ),
-              const DropdownMenuItem(
-                child: Text(
-                  '大阪'
-                ),
+              DropdownMenuItem(
                 value: 'Oosaka',
+                child: Text('大阪'),
               ),
-              const DropdownMenuItem(
-                child: Text(
-                  '福岡'
-                ),
+              DropdownMenuItem(
                 value: 'Fukuoka',
+                child: Text('福岡'),
               ),
-              const DropdownMenuItem(
-                child: Text(
-                  '那覇'
-                ),
+              DropdownMenuItem(
                 value: 'Naha',
+                child: Text('那覇'),
               ),
             ],
             onChanged: (value) {
               cityName.state = value!;
               print(cityName.state);
-              print('中身${asyncValue}');
             },
           ),
           TextButton(
-            onPressed: (){
-              Repository repository = Repository();
-              repository.fetchWeather(cityName.state);
+            onPressed: () {
+              ref.watch(dataProvider);
               showDialog(
-                context: context, 
-                builder: (_){
-                  return WeatherDialog();
-                }
-              );
-            }, 
-            child: Text(
-              '調べる'
-            ),
+                  context: context,
+                  builder: (_) {
+                    return WeatherDialog();
+                  });
+            },
+            child: Text('調べる'),
           ),
         ],
       ),
@@ -98,9 +75,9 @@ class HomePage extends ConsumerWidget{
   }
 }
 
-class WeatherDialog extends ConsumerWidget{
+class WeatherDialog extends ConsumerWidget {
   const WeatherDialog({super.key});
-  
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final asyncValue = ref.watch(dataProvider);
@@ -108,16 +85,18 @@ class WeatherDialog extends ConsumerWidget{
       loading: () => const CircularProgressIndicator(),
       error: (e, _) => Text(e.toString()),
       data: (data) => AlertDialog(
-        title: const Text(
-          '今日のお天気と気温！'
-        ),
+        title: const Text('今日のお天気と気温！'),
         content: Column(
           children: [
-            Text('${data.main!.temp}°'),
-            // Text('${data.main!.temp}°')
+            Text('${data.weathers.first.main}'),
+            Text('${data.weathers.first.description}'),
+            Text('${data.main.temp}°'),
+            Text('最高気温 : ' + data.main.temp_max.toString()),
+            Text('最低気温 : ' + data.main.temp_min.toString()),
+            //Text('${data.main!.temp}°')
           ],
         ),
       ),
     );
   }
-}  
+}
